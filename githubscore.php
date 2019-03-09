@@ -25,18 +25,18 @@ function githubScore($username)
     $eventTypes = $events->pluck('type');
 
     $scores = $eventTypes->map(function ($eventType) {
-        switch ($eventType) {
-            case 'PushEvent':
-                return 5;
-            case 'CreateEvent':
-                return 4;
-            case 'IssuesEvent':
-                return 3;
-            case 'CommitCommentEvent':
-                return 2;
-            default:
-                return 1;
+        $eventScores = [
+            'PushEvent' => 5,
+            'CreateEvent' => 4,
+            'IssuesEvent' => 3,
+            'CommitCommentEvent' => 2,
+        ];
+
+        if (! isset($eventScores[$eventType])) {
+            return 1;
         }
+
+        return $eventScores[$eventType];
     });
 
     return $scores->sum();
