@@ -1,5 +1,7 @@
 <?php
 
+require_once 'vendor/autoload.php';
+
 function githubScore($username)
 {
     $url = "https://api.github.com/users/{$username}/events";
@@ -17,38 +19,27 @@ function githubScore($username)
     ];
 
     $context = stream_context_create($opts);
-    $events = json_decode(file_get_contents($url, false, $context), true);
+    $events = collect(json_decode(file_get_contents($url, false, $context), true));
 
     // Get all of the event type
-    $eventTypes = [];
+    $eventTypes = $events->pluck('type');
 
-    foreach ($events as $event) {
-        $eventTypes[] = $event['type'];
-    }
-
-    $score = 0;
-
-    foreach ($eventTypes as $eventType) {
+    $scores = $eventTypes->map(function ($eventType) {
         switch ($eventType) {
             case 'PushEvent':
-                $score += 5;
-                break;
+                return 5;
             case 'CreateEvent':
-                $score += 4;
-                break;
+                return 4;
             case 'IssuesEvent':
-                $score += 3;
-                break;
+                return 3;
             case 'CommitCommentEvent':
-                $score += 2;
-                break;
+                return 2;
             default:
-                $score++;
-                break;
+                return 1;
         }
-    }
+    });
 
-    return $score;
+    return $scores->sum();
 }
 
 echo githubScore('pnlinh').PHP_EOL;
