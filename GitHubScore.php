@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL ^ E_WARNING);
 
 require_once 'vendor/autoload.php';
 
@@ -49,7 +50,13 @@ class GitHubScore
 
         $context = stream_context_create($opts);
 
-        return collect(json_decode(file_get_contents($url, false, $context), true));
+        $response = json_decode(file_get_contents($url, false, $context), true);
+
+        if ($response === null) {
+            die("Github account $this->username does not exists !");
+        }
+
+        return collect($response);
     }
 
     private function lookupScore($eventType)
