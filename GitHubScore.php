@@ -4,7 +4,7 @@ require_once 'vendor/autoload.php';
 
 class GitHubScore
 {
-    /** @var */
+    /** @var string */
     private $username;
 
     /**
@@ -31,7 +31,7 @@ class GitHubScore
         })->sum();
     }
 
-    private function events()
+    private function events(): \Illuminate\Support\Collection
     {
         $url = "https://api.github.com/users/{$this->username}/events";
 
