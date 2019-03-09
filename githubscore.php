@@ -21,19 +21,14 @@ function githubScore($username)
     $context = stream_context_create($opts);
     $events = collect(json_decode(file_get_contents($url, false, $context), true));
 
-    // Get all of the event type
-    $eventTypes = $events->pluck('type');
-
-    $scores = $eventTypes->map(function ($eventType) {
+    return $events->pluck('type')->map(function ($eventType) {
         return collect([
             'PushEvent' => 5,
             'CreateEvent' => 4,
             'IssuesEvent' => 3,
             'CommitCommentEvent' => 2,
         ])->get($eventType, 1);
-    });
-
-    return $scores->sum();
+    })->sum();
 }
 
 echo githubScore('pnlinh').PHP_EOL;
