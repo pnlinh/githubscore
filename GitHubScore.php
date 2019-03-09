@@ -24,11 +24,9 @@ class GitHubScore
 
     private function score()
     {
-        return $this->events()
-            ->pluck('type')
-            ->map(function ($eventType) {
-                return static::lookupScore($eventType);
-            })->sum();
+        return $this->events()->pluck('type')->map(function ($eventType) {
+            return static::lookupScore($eventType);
+        })->sum();
     }
 
     private function events()
@@ -63,4 +61,10 @@ class GitHubScore
     }
 }
 
-echo GitHubScore::forUser('pnlinh').PHP_EOL;
+if (! isset($argv[1])) {
+    $username = 'pnlinh';
+} else {
+    $username = $argv[1];
+}
+
+echo GitHubScore::forUser($username).PHP_EOL;
