@@ -4,6 +4,13 @@ require_once 'vendor/autoload.php';
 
 function githubScore($username)
 {
+    return fetchEvenets($username)->pluck('type')->map(function ($eventType) {
+        return lookupEventScore($eventType);
+    })->sum();
+}
+
+function fetchEvenets($username)
+{
     $url = "https://api.github.com/users/{$username}/events";
 
     /**
@@ -19,16 +26,18 @@ function githubScore($username)
     ];
 
     $context = stream_context_create($opts);
-    $events = collect(json_decode(file_get_contents($url, false, $context), true));
 
-    return $events->pluck('type')->map(function ($eventType) {
-        return collect([
-            'PushEvent' => 5,
-            'CreateEvent' => 4,
-            'IssuesEvent' => 3,
-            'CommitCommentEvent' => 2,
-        ])->get($eventType, 1);
-    })->sum();
+    return collect(json_decode(file_get_contents($url, false, $context), true));
+}
+
+function lookupEventScore($eventType)
+{
+    return collect([
+        'PushEvent' => 5,
+        'CreateEvent' => 4,
+        'IssuesEvent' => 3,
+        'CommitCommentEvent' => 2,
+    ])->get($eventType, 1);
 }
 
 echo githubScore('pnlinh').PHP_EOL;
