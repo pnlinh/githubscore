@@ -28,8 +28,8 @@ class GitHubScore
         return $this->events()
             ->pluck('type')
             ->map(function ($eventType) {
-            return static::lookupScore($eventType);
-        })->sum();
+                return static::lookupScore($eventType);
+            })->sum();
     }
 
     private function events(): \Illuminate\Support\Collection
